@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}OKR Tracker - Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1 class="display-4">Welcome to OKR Tracker</h1>
+            <p class="lead">Track your Objectives and Key Results with ease</p>
+            <hr class="my-4">
+            <p>OKR Tracker helps you define, track, and achieve your goals through Objectives and Key Results.</p>
+            <div class="mt-4">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-2">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg">Register</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

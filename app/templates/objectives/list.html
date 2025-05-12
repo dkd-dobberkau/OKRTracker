@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}My Objectives - OKR Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>My Objectives</h1>
+            <a href="{{ url_for('objectives.new_objective') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Objective
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if objectives %}
+<div class="row">
+    {% for objective in objectives %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ objective.title }}</h5>
+                <span class="badge {% if objective.is_complete %}bg-success{% else %}bg-primary{% endif %}">
+                    {% if objective.is_complete %}Completed{% else %}In Progress{% endif %}
+                </span>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ objective.description|truncate(100) }}</p>
+                <div class="mt-3">
+                    <p><strong>Progress:</strong></p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ objective.progress()|round }}%;"
+                             aria-valuenow="{{ objective.progress()|round }}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                            {{ objective.progress()|round }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        Due: {{ objective.end_date.strftime('%Y-%m-%d') }}
+                    </small>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('objectives.view_objective', id=objective.id) }}" 
+                   class="btn btn-outline-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <h4>No objectives yet!</h4>
+                <p class="text-muted">Create your first objective to get started.</p>
+                <a href="{{ url_for('objectives.new_objective') }}" class="btn btn-primary mt-3">
+                    Create Objective
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

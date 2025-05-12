@@ -1,0 +1,40 @@
+# OKR Tracker - TODO List
+
+## High Priority
+- Implement admin dashboard for user management
+- Add email verification for new user registrations
+- Create API endpoints for programmatic access
+- Implement user profile management (change password, update email)
+- Add support for teams and departments
+
+## Medium Priority
+- Add data export functionality (CSV, PDF)
+- Implement reminder notifications for approaching deadlines
+- Create detailed reports with charts and statistics
+- Add commenting system for objectives and key results
+- Implement tagging system for better organization
+
+## Low Priority
+- Add dark mode theme
+- Implement internationalization (i18n) support
+- Create mobile app version
+- Add OAuth login options (Google, GitHub)
+- Implement real-time updates with WebSockets
+
+## Bug Fixes
+- Fix mobile responsiveness issues in dashboard
+- Address potential SQL injection vulnerabilities
+- Optimize database queries for better performance
+
+## Enhancements
+- Improve form validation error messages
+- Add confirmation dialogs for destructive actions
+- Implement better progress visualization
+- Add breadcrumb navigation
+- Create guided tour for new users
+
+## Documentation
+- Create API documentation
+- Write user guide with screenshots
+- Document database schema
+- Create developer onboarding guide

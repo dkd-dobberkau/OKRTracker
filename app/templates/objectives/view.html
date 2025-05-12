@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}{{ objective.title }} - OKR Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('objectives.list_objectives') }}">Objectives</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ objective.title }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">{{ objective.title }}</h3>
+                <div>
+                    <a href="{{ url_for('objectives.edit_objective', id=objective.id) }}" 
+                       class="btn btn-outline-primary btn-sm">Edit</a>
+                    <a href="#" class="btn btn-outline-danger btn-sm" 
+                       data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Description:</strong> {{ objective.description }}</p>
+                        <p><strong>Start Date:</strong> {{ objective.start_date.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>End Date:</strong> {{ objective.end_date.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Progress:</strong></p>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ objective.progress()|round }}%;"
+                                 aria-valuenow="{{ objective.progress()|round }}" 
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ objective.progress()|round }}%
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="completeCheckbox"
+                                   {% if objective.is_complete %}checked{% endif %}
+                                   data-objective-id="{{ objective.id }}">
+                            <label class="form-check-label" for="completeCheckbox">
+                                Mark as Complete
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Key Results</h4>
+                <a href="{{ url_for('keyresults.new_key_result', objective_id=objective.id) }}" 
+                   class="btn btn-primary btn-sm">Add Key Result</a>
+            </div>
+            <div class="card-body">
+                {% if objective.key_results.count() > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Target</th>
+                                <th>Current</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for kr in objective.key_results %}
+                            <tr>
+                                <td>{{ kr.title }}</td>
+                                <td>{{ kr.target_value }} {{ kr.unit }}</td>
+                                <td>{{ kr.current_value }} {{ kr.unit }}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ kr.progress|round }}%;"
+                                             aria-valuenow="{{ kr.progress|round }}" 
+                                             aria-valuemin="0" aria-valuemax="100">
+                                            {{ kr.progress|round }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('keyresults.update_key_result', id=kr.id) }}" 
+                                           class="btn btn-outline-primary">Update</a>
+                                        <a href="{{ url_for('keyresults.edit_key_result', id=kr.id) }}" 
+                                           class="btn btn-outline-secondary">Edit</a>
+                                        <a href="#" class="btn btn-outline-danger"
+                                           data-bs-toggle="modal" 
+                                           data-bs-target="#deleteKRModal{{ kr.id }}">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center mt-3">No key results yet. 
+                   <a href="{{ url_for('keyresults.new_key_result', objective_id=objective.id) }}">
+                      Add your first key result
+                   </a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Objective Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this objective? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('objectives.delete_objective', id=objective.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Key Result Modals -->
+{% for kr in objective.key_results %}
+<div class="modal fade" id="deleteKRModal{{ kr.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this key result? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('keyresults.delete_key_result', id=kr.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const completeCheckbox = document.getElementById('completeCheckbox');
+    if (completeCheckbox) {
+        completeCheckbox.addEventListener('change', function() {
+            const objectiveId = this.dataset.objectiveId;
+            const isComplete = this.checked;
+            
+            fetch(`/api/objectives/${objectiveId}/complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_complete: isComplete })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Optionally show a notification
+                    console.log('Objective updated successfully');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating objective:', error);
+                // Reset the checkbox to its previous state
+                this.checked = !isComplete;
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

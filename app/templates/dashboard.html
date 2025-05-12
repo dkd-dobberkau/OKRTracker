@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - OKR Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Dashboard</h1>
+        <p>Welcome, {{ current_user.username }}!</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Overall Progress</h5>
+                <div class="progress mt-3">
+                    <div class="progress-bar" role="progressbar" style="width: {{ overall_progress }}%;"
+                        aria-valuenow="{{ overall_progress }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ overall_progress|round }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Objectives</h5>
+                <div class="display-4">{{ objectives|length }}</div>
+                <p class="text-muted">Total Objectives</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Completed</h5>
+                <div class="display-4">{{ completed }}</div>
+                <p class="text-muted">Completed Objectives</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Upcoming Objectives</h5>
+                <a href="{{ url_for('objectives.new_objective') }}" class="btn btn-primary btn-sm">
+                    Add New Objective
+                </a>
+            </div>
+            <div class="card-body">
+                {% if upcoming %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Due Date</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for objective in upcoming %}
+                            <tr>
+                                <td>{{ objective.title }}</td>
+                                <td>{{ objective.end_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ objective.progress()|round }}%;"
+                                             aria-valuenow="{{ objective.progress()|round }}" 
+                                             aria-valuemin="0" aria-valuemax="100">
+                                            {{ objective.progress()|round }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('objectives.view_objective', id=objective.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center mt-3">No upcoming objectives. 
+                    <a href="{{ url_for('objectives.new_objective') }}">Create your first objective</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
